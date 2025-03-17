@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+{% load static %}
+{% load mathfilters %}
+<html>
+<head>
+    <title>Liste des vins</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+    <h1 align="center">Bienvenue chez NEGOSUD</h1>
+</head>
+<body>
+    <h2>Bonjour, {{ request.session.customer_name }}</h2>
+    <P align="right" style="margin-right: 10px"><a href="{% url 'logout' %}">Logout</a> | <a href="{% url 'view_cart' %}">Panier</a></P>
+
+    <h3>Liste des vins</h3>
+    <table border="1">
+        <tr>
+            <th>Domaine</th>
+            <th>Cuvée</th>
+            <th>Millésime</th>
+            <th>Couleur</th>
+            <th>Cépage</th>
+            <th>Appellation</th>
+            <th>Prix unitaire</th>
+            <th>Prix caisse (6 bouteilles)</th>
+            <th>Quantité</th>
+        </tr>
+        {% for wine in wines %}
+        <tr>
+            <td>{{ wine.Provider.Provider_domain_name }}</td>
+            <td>{{ wine.cuvee_name }}</td>
+            <td>{{ wine.Vintage }}</td>
+            <td>{{ wine.Color.Color_color }}</td>
+            <td>{{ wine.Cepage.Cepage_cepage }}</td>
+            <td>{{ wine.Appellation.Appellation_name }}</td>
+            <td>{{ wine.selling_price }} €</td>
+            <td>{{ wine.selling_price|mul:6|floatformat:2 }} €</td>
+            <td>
+                <form method="post" action="{% url 'add_to_cart' wine.idWine %}">
+                    {% csrf_token %}
+                    <input type="number" name="quantity" value="1" min="1" required>
+                    <button type="submit">Ajouter au panier</button>
+                </form>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="10">Aucun vin n'est disponible actuellement.</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

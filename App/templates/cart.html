@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+{% load static %}
+{% load mathfilters %}
+<html>
+<head>
+    <title>Panier</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+</head>
+<body>
+    <h2>Your Cart</h2>
+    <a href="{% url 'wine_list' %}">Continuer vos achats</a> | <a href="{% url 'logout' %}">Se déconnecter</a>
+
+    <table border="1">
+        <tr>
+            <th>Cuvée</th>
+            <th>Quantité</th>
+            <th>Price unitaire</th>
+            <th>Prix total</th>
+        </tr>
+        {% for wine_id, item in cart.items %}
+        <tr>
+            <td>{{ item.cuvee_name }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.selling_price }} €</td>
+            <td>{{ item.selling_price|mul:item.quantity|floatformat:2 }} €</td>
+            <td>
+                <a href="{% url 'remove_from_cart' wine_id %}">Supprimer</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5">Votre panier est vide.</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <br>
+    {% if cart %}
+        <form method="post" action="{% url 'checkout' %}">
+            {% csrf_token %}
+            <button type="submit">Commander</button>
+        </form>
+    {% endif %}
+</body>
+</html>
